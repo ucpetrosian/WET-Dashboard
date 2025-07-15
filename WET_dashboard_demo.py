@@ -28,10 +28,28 @@ WWF_soil = pd.read_csv("C:/Users/cpetrosi/Box/TREX/MISCELLANEOUS/Datalogger_Repo
 WWF_soil= WWF_soil.reset_index(drop=True)
 WWF_soil.TIMESTAMP= pd.to_datetime(WWF_soil['TIMESTAMP'], format= 'mixed')
 
+def return_options(param):
+    if param == "VWC":
+        return ["VWC_5cm_Avg", "VWC_10cm_Avg", "VWC_20cm_Avg", "VWC_30cm_Avg", "VWC_40cm_Avg", "VWC_50cm_Avg",
+                            "VWC_60cm_Avg", "VWC_75cm_Avg", "VWC_100cm_Avg"]
+    elif param == "Ka":
+        return ["Ka_5cm_Avg", "Ka_10cm_Avg", "Ka_20cm_Avg", "Ka_30cm_Avg", "Ka_40cm_Avg", "Ka_50cm_Avg",
+                      "Ka_60cm_Avg", "Ka_75cm_Avg", "Ka_100cm_Avg"]
+    elif param == "T":
+        return ["T_5cm_Avg", "T_10cm_Avg", "T_20cm_Avg", "T_30cm_Avg", "T_40cm_Avg", "T_50cm_Avg",
+                      "T_60cm_Avg", "T_75cm_Avg", "T_100cm_Avg"]
+    elif param == "BulkEC":
+        return ["BulkEC_5cm_Avg", "BulkEC_10cm_Avg", "BulkEC_20cm_Avg", "BulkEC_30cm_Avg", "BulkEC_40cm_Avg", "BulkEC_50cm_Avg",
+                      "BulkEC_60cm_Avg", "BulkEC_75cm_Avg", "BulkEC_100cm_Avg"]
+
+
+
 st.sidebar.header("Plot Adjustments")
 
-option = st.sidebar.selectbox("Select Parameter:",
-                     ["VWC_5cm_Avg", "VWC_10cm_Avg", "VWC_20cm_Avg", "VWC_30cm_Avg", "VWC_40cm_Avg", "VWC_50cm_Avg",
-                      "VWC_60cm_Avg", "VWC_75cm_Avg", "VWC_100cm_Avg"])
+param_type = st.sidebar.selectbox("Select Parameter Type:",
+                                  ["VWC", "Ka", "T", "BulkEC"])
 
-st.plotly_chart(px.line(WWF_soil, x = "TIMESTAMP", y = option))
+option = st.sidebar.multiselect("Select Measurement:",
+                                return_options(param_type))
+
+st.plotly_chart(px.line(WWF_soil, x = "TIMESTAMP", y = option, labels = {"value": param_type}))
