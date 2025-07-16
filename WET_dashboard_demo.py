@@ -65,3 +65,5 @@ option = st.sidebar.multiselect("Select Measurement:",
 
 
 st.plotly_chart(px.line(all_soil.loc[all_soil.station_id == site], x = "TIMESTAMP", y = option, labels = {"value": param_type}))
+
+st.dataframe(data = all_soil.loc[all_soil.station_id == site, ["TIMESTAMP"] + option])
