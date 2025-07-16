@@ -23,10 +23,18 @@ st.set_page_config(layout = "wide")
 
 st.title("WET Dashboard Demo")
 
-WWF_flux = pd.read_csv("C:/Users/cpetrosi/Box/TREX/MISCELLANEOUS/Datalogger_Report_Files/suplementary/flux_notes_and_soilvue/VAC_Flux_Notes.dat", header = [0], skiprows = [0,2,3])
-WWF_soil = pd.read_csv("C:/Users/cpetrosi/Box/TREX/MISCELLANEOUS/Datalogger_Report_Files/suplementary/flux_notes_and_soilvue/VAC_SoilVUE_Daily.dat", header = [0], skiprows = [0,2,3])
-WWF_soil= WWF_soil.reset_index(drop=True)
-WWF_soil.TIMESTAMP= pd.to_datetime(WWF_soil['TIMESTAMP'], format= 'mixed')
+VAC_flux = pd.read_csv("C:/Users/cpetrosi/Box/TREX/MISCELLANEOUS/Datalogger_Report_Files/suplementary/flux_notes_and_soilvue/VAC_Flux_Notes.dat", header = [0], skiprows = [0,2,3])
+VAC_soil = pd.read_csv("C:/Users/cpetrosi/Box/TREX/MISCELLANEOUS/Datalogger_Report_Files/suplementary/flux_notes_and_soilvue/VAC_SoilVUE_Daily.dat", header = [0], skiprows = [0,2,3])
+VAC_soil= VAC_soil.reset_index(drop=True)
+VAC_soil.TIMESTAMP= pd.to_datetime(VAC_soil['TIMESTAMP'], format= 'mixed')
+VAC_soil["station_id"] = "VAC_001"
+
+OLA_soil = pd.read_csv("C:/Users/cpetrosi/Box/TREX/MISCELLANEOUS/Datalogger_Report_Files/suplementary/flux_notes_and_soilvue/OLA_SoilVUE_Daily.dat", header = [0], skiprows = [0,2,3])
+OLA_soil= OLA_soil.reset_index(drop=True)
+OLA_soil.TIMESTAMP= pd.to_datetime(OLA_soil['TIMESTAMP'], format= 'mixed')
+OLA_soil["station_id"] = "OLA_001"
+
+all_soil = pd.concat([VAC_soil, OLA_soil], ignore_index=True)
 
 def return_options(param):
     if param == "VWC":
@@ -46,10 +54,14 @@ def return_options(param):
 
 st.sidebar.header("Plot Adjustments")
 
+site = st.sidebar.selectbox("Select Station:",
+                            ["VAC_001", "OLA_001"], index = 0)
+
 param_type = st.sidebar.selectbox("Select Parameter Type:",
-                                  ["VWC", "Ka", "T", "BulkEC"])
+                                  ["VWC", "Ka", "T", "BulkEC"], index = 0)
 
 option = st.sidebar.multiselect("Select Measurement:",
                                 return_options(param_type))
 
-st.plotly_chart(px.line(WWF_soil, x = "TIMESTAMP", y = option, labels = {"value": param_type}))
+
+st.plotly_chart(px.line(all_soil.loc[all_soil.station_id == site], x = "TIMESTAMP", y = option, labels = {"value": param_type}))
