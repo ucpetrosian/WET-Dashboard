@@ -36,21 +36,13 @@ OLA_soil= OLA_soil.reset_index(drop=True)
 OLA_soil.TIMESTAMP= pd.to_datetime(OLA_soil['TIMESTAMP'], format= 'mixed')
 OLA_soil["station_id"] = "OLA_001"
 
-all_soil = pd.concat([VAC_soil, OLA_soil], ignore_index=True)
+range_names = pd.read_csv("C:/Users/cpetrosi/Documents/GitHub/WET-Dashboard/Static_Files/MET_station_ranges.csv")
 
-def return_options(param):
-    if param == "VWC":
-        return ["VWC_5cm_Avg", "VWC_10cm_Avg", "VWC_20cm_Avg", "VWC_30cm_Avg", "VWC_40cm_Avg", "VWC_50cm_Avg",
-                            "VWC_60cm_Avg", "VWC_75cm_Avg", "VWC_100cm_Avg"]
-    elif param == "Ka":
-        return ["Ka_5cm_Avg", "Ka_10cm_Avg", "Ka_20cm_Avg", "Ka_30cm_Avg", "Ka_40cm_Avg", "Ka_50cm_Avg",
-                      "Ka_60cm_Avg", "Ka_75cm_Avg", "Ka_100cm_Avg"]
-    elif param == "T":
-        return ["T_5cm_Avg", "T_10cm_Avg", "T_20cm_Avg", "T_30cm_Avg", "T_40cm_Avg", "T_50cm_Avg",
-                      "T_60cm_Avg", "T_75cm_Avg", "T_100cm_Avg"]
-    elif param == "BulkEC":
-        return ["BulkEC_5cm_Avg", "BulkEC_10cm_Avg", "BulkEC_20cm_Avg", "BulkEC_30cm_Avg", "BulkEC_40cm_Avg", "BulkEC_50cm_Avg",
-                      "BulkEC_60cm_Avg", "BulkEC_75cm_Avg", "BulkEC_100cm_Avg"]
+all_soil = pd.concat([VAC_soil, OLA_soil], ignore_index=True)
+all_soil = all_soil.rename(columns = {"VWC_10cm_Avg": "SWC_1_1_1"})
+
+def return_options(sensor, df):
+    return df.loc[df.Sensor == sensor].Variable_Name.unique()
 
 
 
@@ -59,13 +51,16 @@ st.sidebar.header("Plot Adjustments")
 site = st.sidebar.selectbox("Select Station:",
                             ["VAC_001", "OLA_001"], index = 0)
 
-param_type = st.sidebar.selectbox("Select Parameter Type:",
-                                  ["VWC", "Ka", "T", "BulkEC"], index = 0)
+sensor_type = st.sidebar.selectbox("Select Sensor Type:",
+                                  range_names.Sensor.unique(), index = 0)
 
 option = st.sidebar.multiselect("Select Measurement:",
-                                return_options(param_type))
+                                return_options(sensor_type, range_names))
 
 
-st.plotly_chart(px.line(all_soil.loc[all_soil.station_id == site], x = "TIMESTAMP", y = option, labels = {"value": param_type}))
+st.plotly_chart(px.line(all_soil.loc[all_soil.station_id == site], x = "TIMESTAMP", y = option, labels = {"value": " / ".join(option)},
+                        range_y = [min(range_names.loc[range_names.Variable_Name.isin(option)].Range_Low),
+                                   max(range_names.loc[range_names.Variable_Name.isin(option)].Range_High)]
+                                   ))
 
 st.dataframe(data = all_soil.loc[all_soil.station_id == site, ["TIMESTAMP"] + option])
