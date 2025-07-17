@@ -23,13 +23,15 @@ st.set_page_config(layout = "wide")
 
 st.title("WET Dashboard Demo")
 
-VAC_flux = pd.read_csv("C:/Users/cpetrosi/Box/TREX/MISCELLANEOUS/Datalogger_Report_Files/suplementary/flux_notes_and_soilvue/VAC_Flux_Notes.dat", header = [0], skiprows = [0,2,3])
-VAC_soil = pd.read_csv("C:/Users/cpetrosi/Box/TREX/MISCELLANEOUS/Datalogger_Report_Files/suplementary/flux_notes_and_soilvue/VAC_SoilVUE_Daily.dat", header = [0], skiprows = [0,2,3])
+user_path = "cpetrosi"
+
+VAC_flux = pd.read_csv(f"C:/Users/{user_path}/Box/TREX/MISCELLANEOUS/Datalogger_Report_Files/suplementary/flux_notes_and_soilvue/VAC_Flux_Notes.dat", header = [0], skiprows = [0,2,3])
+VAC_soil = pd.read_csv(f"C:/Users/{user_path}/Box/TREX/MISCELLANEOUS/Datalogger_Report_Files/suplementary/flux_notes_and_soilvue/VAC_SoilVUE_Daily.dat", header = [0], skiprows = [0,2,3])
 VAC_soil= VAC_soil.reset_index(drop=True)
 VAC_soil.TIMESTAMP= pd.to_datetime(VAC_soil['TIMESTAMP'], format= 'mixed')
 VAC_soil["station_id"] = "VAC_001"
 
-OLA_soil = pd.read_csv("C:/Users/cpetrosi/Box/TREX/MISCELLANEOUS/Datalogger_Report_Files/suplementary/flux_notes_and_soilvue/OLA_SoilVUE_Daily.dat", header = [0], skiprows = [0,2,3])
+OLA_soil = pd.read_csv(f"C:/Users/{user_path}/Box/TREX/MISCELLANEOUS/Datalogger_Report_Files/suplementary/flux_notes_and_soilvue/OLA_SoilVUE_Daily.dat", header = [0], skiprows = [0,2,3])
 OLA_soil= OLA_soil.reset_index(drop=True)
 OLA_soil.TIMESTAMP= pd.to_datetime(OLA_soil['TIMESTAMP'], format= 'mixed')
 OLA_soil["station_id"] = "OLA_001"
