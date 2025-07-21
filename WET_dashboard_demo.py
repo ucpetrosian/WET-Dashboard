@@ -19,9 +19,12 @@ import plotly
 import plotly.express as px
 from shapely.geometry import Point
 import datetime
+import warnings
+
 
 ## Default makes elements wide on dashboard
 st.set_page_config(layout = "wide")  
+
 
 st.title("WET Dashboard Demo")
 
@@ -53,10 +56,16 @@ last_month = date.today() - timedelta(days=30)
 last_month = np.datetime64(last_month)
 all_soil = all_soil[all_soil["TIMESTAMP"] > last_month]
 
-## Sets up dictionary to add units to legend in plot
+## Sets up dictionary to add units to legend in plot,
+## Also sets up range dictionary
 unit_dict = dict()
+range_dict = dict()
 for name in range_names.Variable_Name.unique():
     unit_dict[name] = name + " (" + range_names.loc[range_names.Variable_Name == name, "Units"].iloc[0] + ")"
+    low = range_names.loc[range_names.Variable_Name == name, ["Range_Low"]].iloc[0]
+    high = range_names.loc[range_names.Variable_Name == name, ["Range_High"]].iloc[0]
+    range_dict[name] = (float(low), float(high))
+
 
 ## When called, fills multiselect with options based on sensor
 def return_options(sensor, df):
@@ -100,6 +109,25 @@ st.plotly_chart(px.line(update_df(all_soil, site, option), x = "TIMESTAMP", y = 
                                 max(range_names.loc[range_names.Variable_Name.isin(option)].Range_High)]
                                 ))
 
-## Displays DF reflection of current plot
-## WILL ADD: highlight cells that are out of range
-st.dataframe(data = all_soil.loc[all_soil.station_id == site, ["TIMESTAMP"] + option])
+
+## Grabs ranges for relevant columns, highlights any values that fall outside of range for given column
+def highlight_outliers(row):
+    styles = []
+    for col in row.index:
+        if col != "TIMESTAMP":
+            min_val, max_val = range_dict[col]
+            if float(row[col]) < min_val or float(row[col]) > max_val:
+                styles.append('background-color: #930707')
+            else:
+                styles.append('')
+        else:
+            styles.append("")
+    return styles
+
+## Trims DF based on station, applies style function
+def dataframe_styler(df):
+    ret_df = df.loc[df.station_id == site, ["TIMESTAMP"] + option]
+    return ret_df.style.apply(highlight_outliers, axis = 1)
+
+
+st.dataframe(data = dataframe_styler(all_soil))
