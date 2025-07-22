@@ -19,7 +19,7 @@ import plotly
 import plotly.express as px
 from shapely.geometry import Point
 import datetime
-import warnings
+
 
 
 ## Default makes elements wide on dashboard
