@@ -34,29 +34,31 @@ user_path = "cpetrosi"
 
 range_names = pd.read_csv("C:/Users/cpetrosi/Documents/GitHub/WET-Dashboard/Static_Files/MET_station_ranges.csv")
 
+all_data = pd.read_csv("C:/Users/cpetrosi/Documents/GitHub/WET-Dashboard/Static_Files/WET_dashboard_data.csv", na_values = "NAN")
 ## Call each tower DF, set up proper datetime column, combine at end
 
-VAC_flux = pd.read_csv(f"C:/Users/{user_path}/Box/TREX/MISCELLANEOUS/Datalogger_Report_Files/suplementary/flux_notes_and_soilvue/VAC_Flux_Notes.dat", header = [0], skiprows = [0,2,3])
-VAC_soil = pd.read_csv(f"C:/Users/{user_path}/Box/TREX/MISCELLANEOUS/Datalogger_Report_Files/suplementary/flux_notes_and_soilvue/VAC_SoilVUE_Daily.dat", header = [0], skiprows = [0,2,3])
-VAC_soil= VAC_soil.reset_index(drop=True)
-VAC_soil.TIMESTAMP= pd.to_datetime(VAC_soil['TIMESTAMP'], format= 'mixed')
-VAC_soil["station_id"] = "VAC_001"
+# VAC_flux = pd.read_csv(f"C:/Users/{user_path}/Box/TREX/MISCELLANEOUS/Datalogger_Report_Files/suplementary/flux_notes_and_soilvue/VAC_Flux_Notes.dat", header = [0], skiprows = [0,2,3])
+# VAC_soil = pd.read_csv(f"C:/Users/{user_path}/Box/TREX/MISCELLANEOUS/Datalogger_Report_Files/suplementary/flux_notes_and_soilvue/VAC_SoilVUE_Daily.dat", header = [0], skiprows = [0,2,3])
+# VAC_soil= VAC_soil.reset_index(drop=True)
+# VAC_soil.TIMESTAMP= pd.to_datetime(VAC_soil['TIMESTAMP'], format= 'mixed')
+# VAC_soil["site"] = "VAC_001"
 
-OLA_soil = pd.read_csv(f"C:/Users/{user_path}/Box/TREX/MISCELLANEOUS/Datalogger_Report_Files/suplementary/flux_notes_and_soilvue/OLA_SoilVUE_Daily.dat", header = [0], skiprows = [0,2,3])
-OLA_soil= OLA_soil.reset_index(drop=True)
-OLA_soil.TIMESTAMP= pd.to_datetime(OLA_soil['TIMESTAMP'], format= 'mixed')
-OLA_soil["station_id"] = "OLA_001"
+# OLA_soil = pd.read_csv(f"C:/Users/{user_path}/Box/TREX/MISCELLANEOUS/Datalogger_Report_Files/suplementary/flux_notes_and_soilvue/OLA_SoilVUE_Daily.dat", header = [0], skiprows = [0,2,3])
+# OLA_soil= OLA_soil.reset_index(drop=True)
+# OLA_soil.TIMESTAMP= pd.to_datetime(OLA_soil['TIMESTAMP'], format= 'mixed')
+# OLA_soil["site"] = "OLA_001"
 
-all_soil = pd.concat([VAC_soil, OLA_soil], ignore_index=True)
-all_soil = all_soil.rename(columns = {"VWC_10cm_Avg": "SWC_1_1_1",
-                                      "VWC_20cm_Avg": "SWC_1_2_1",
-                                      "VWC_30cm_Avg": "SWC_1_3_1"}) ## Wont need rename once real data comes through
+# all_data = pd.concat([VAC_soil, OLA_soil], ignore_index=True)
+# all_data = all_data.rename(columns = {"VWC_10cm_Avg": "SWC_1_1_1",
+#                                       "VWC_20cm_Avg": "SWC_1_2_1",
+#                                       "VWC_30cm_Avg": "SWC_1_3_1"}) ## Wont need rename once real data comes through
 
 
 ## Only keeps data from last 30 days
+all_data["TIMESTAMP"] = pd.to_datetime(all_data["TIMESTAMP"])
 last_month = date.today() - timedelta(days=30)
 last_month = np.datetime64(last_month)
-all_soil = all_soil[all_soil["TIMESTAMP"] > last_month]
+all_data = all_data[all_data["TIMESTAMP"] > last_month]
 
 ## Sets up dictionary to add units to legend in plot,
 ## Also sets up range dictionary
@@ -75,7 +77,7 @@ def return_options(sensor, df):
 
 ## Trims main DF to only selected tower, then renames columns to add units
 def update_df(df, site, option, unit_dict = unit_dict):
-    plot_df = df.loc[df.station_id == site]
+    plot_df = df.loc[df.site == site]
     for col in option:
         plot_df = plot_df.rename(columns = {col: unit_dict[col]})
     return plot_df
@@ -92,7 +94,7 @@ st.sidebar.header("Plot Adjustments")
 
 ## Puts station selector in sidebar, returns selected station
 site = st.sidebar.selectbox("Select Station:",
-                            ["VAC_001", "OLA_001"], index = 0)
+                            ["CAP_001", "CAP_002", "WET_003", "WET_004"], index = 0)
 
 ## Puts sensor selector in sidebar, returns selected sensor, options populated by range_names csv
 sensor_type = st.sidebar.selectbox("Select Sensor Type:",
@@ -106,9 +108,10 @@ option = st.sidebar.multiselect("Select Measurement:",
 ## Uses plotly chart to plot data, uses aforementioned functions for label/DF setup
 ## Y-axis labels set using passed columns via multiselector
 ## Range is set using range_names csv
-st.plotly_chart(px.line(update_df(all_soil, site, option), x = "TIMESTAMP", y = update_col_names(option), labels = {"value": " / ".join(option)},
-                        range_y = [min(range_names.loc[range_names.Variable_Name.isin(option)].Range_Low),
-                                max(range_names.loc[range_names.Variable_Name.isin(option)].Range_High)]
+st.plotly_chart(px.line(update_df(all_data, site, option), x = "TIMESTAMP", y = update_col_names(option),
+                        # labels = {"value": " / ".join(option)},
+                        # range_y = [min(range_names.loc[range_names.Variable_Name.isin(option)].Range_Low),
+                        #         max(range_names.loc[range_names.Variable_Name.isin(option)].Range_High)]
                                 ))
 
 
@@ -128,8 +131,8 @@ def highlight_outliers(row):
 
 ## Trims DF based on station, applies style function
 def dataframe_styler(df):
-    ret_df = df.loc[df.station_id == site, ["TIMESTAMP"] + option]
+    ret_df = df.loc[df.site == site, ["TIMESTAMP"] + option]
     return ret_df.style.apply(highlight_outliers, axis = 1)
 
 
-st.dataframe(data = dataframe_styler(all_soil))
+st.dataframe(data = dataframe_styler(all_data))
