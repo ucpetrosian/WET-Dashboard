@@ -50,7 +50,7 @@ ind_df = pd.DataFrame()
 soil_df = pd.DataFrame()
 rad_df = pd.DataFrame()
 
-sites = ["WET01", "WET02", "WET03"]
+sites = ["WET01", "WET02", "WET03", "WET04"]
 path = Path("C:/Users/cpetrosi/Box/TREX/MISCELLANEOUS/Datalogger_Report_Files/")
 for i in range(0, len(sites)):
   for name in path.glob("*"+sites[i]+"*.dat"):
