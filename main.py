@@ -1,26 +1,19 @@
-import fnmatch
 import warnings
 warnings.filterwarnings('ignore', category=FutureWarning)
 import pandas as pd
-import datetime
-import os
 from datetime import timedelta
 from datetime import date
 from dateutil.relativedelta import relativedelta
 import numpy as np
-import requests
-import folium as fl
-from streamlit_folium import st_folium
+import json, requests, urllib, io
 import streamlit as st
 import numpy as np
 import os
-import glob
-import geopandas as gpd
 from IPython.display import display
 import plotly
 import plotly.express as px
 from shapely.geometry import Point
-import datetime
+
 
 
 
@@ -28,30 +21,25 @@ import datetime
 st.set_page_config(layout = "wide")  
 
 
-st.title("WET Dashboard Demo")
+st.title("WET Dashboard")
 
-user_path = "mrcoo"
+github_session = requests.Session()
+csv_url = 'https://raw.githubusercontent.com/ucpetrosian/WET-Dashboard/master/Static_Files/WET_dashboard_data.csv'
+download = github_session.get(csv_url).content
+all_data = pd.read_csv(io.StringIO(download.decode('utf-8')), index_col = [0])
 
-range_names = pd.read_csv(f"C:/Users/{user_path}/Documents/GitHub/WET-Dashboard/Static_Files/MET_station_ranges.csv")
 
-all_data = pd.read_csv(f"C:/Users/{user_path}/Documents/GitHub/WET-Dashboard/Static_Files/WET_dashboard_data.csv", na_values = "NAN")
-## Call each tower DF, set up proper datetime column, combine at end
+csv_url = 'https://raw.githubusercontent.com/ucpetrosian/WET-Dashboard/master/Static_Files/MET_station_data.csv'
+download = github_session.get(csv_url).content
+range_names = pd.read_csv(io.StringIO(download.decode('utf-8')), index_col = [0])
 
-# VAC_flux = pd.read_csv(f"C:/Users/{user_path}/Box/TREX/MISCELLANEOUS/Datalogger_Report_Files/suplementary/flux_notes_and_soilvue/VAC_Flux_Notes.dat", header = [0], skiprows = [0,2,3])
-# VAC_soil = pd.read_csv(f"C:/Users/{user_path}/Box/TREX/MISCELLANEOUS/Datalogger_Report_Files/suplementary/flux_notes_and_soilvue/VAC_SoilVUE_Daily.dat", header = [0], skiprows = [0,2,3])
-# VAC_soil= VAC_soil.reset_index(drop=True)
-# VAC_soil.TIMESTAMP= pd.to_datetime(VAC_soil['TIMESTAMP'], format= 'mixed')
-# VAC_soil["site"] = "VAC_001"
 
-# OLA_soil = pd.read_csv(f"C:/Users/{user_path}/Box/TREX/MISCELLANEOUS/Datalogger_Report_Files/suplementary/flux_notes_and_soilvue/OLA_SoilVUE_Daily.dat", header = [0], skiprows = [0,2,3])
-# OLA_soil= OLA_soil.reset_index(drop=True)
-# OLA_soil.TIMESTAMP= pd.to_datetime(OLA_soil['TIMESTAMP'], format= 'mixed')
-# OLA_soil["site"] = "OLA_001"
 
-# all_data = pd.concat([VAC_soil, OLA_soil], ignore_index=True)
-# all_data = all_data.rename(columns = {"VWC_10cm_Avg": "SWC_1_1_1",
-#                                       "VWC_20cm_Avg": "SWC_1_2_1",
-#                                       "VWC_30cm_Avg": "SWC_1_3_1"}) ## Wont need rename once real data comes through
+# user_path = "mrcoo"
+
+# range_names = pd.read_csv(f"C:/Users/{user_path}/Documents/GitHub/WET-Dashboard/Static_Files/MET_station_ranges.csv")
+
+# all_data = pd.read_csv(f"C:/Users/{user_path}/Documents/GitHub/WET-Dashboard/Static_Files/WET_dashboard_data.csv", na_values = "NAN")
 
 
 ## Only keeps data from last 30 days
