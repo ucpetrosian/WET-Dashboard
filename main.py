@@ -31,7 +31,7 @@ all_data = pd.read_csv(io.StringIO(download.decode('utf-8')), index_col = [0])
 
 csv_url = 'https://raw.githubusercontent.com/ucpetrosian/WET-Dashboard/master/Static_Files/MET_station_ranges.csv'
 download = github_session.get(csv_url).content
-range_names = pd.read_csv(io.StringIO(download.decode('utf-8')), index_col = [0])
+range_names = pd.read_csv(io.StringIO(download.decode('utf-8')))
 
 
 
