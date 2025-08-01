@@ -30,11 +30,11 @@ st.set_page_config(layout = "wide")
 
 st.title("WET Dashboard Demo")
 
-user_path = "cpetrosi"
+user_path = "mrcoo"
 
-range_names = pd.read_csv("C:/Users/cpetrosi/Documents/GitHub/WET-Dashboard/Static_Files/MET_station_ranges.csv")
+range_names = pd.read_csv(f"C:/Users/{user_path}/Documents/GitHub/WET-Dashboard/Static_Files/MET_station_ranges.csv")
 
-all_data = pd.read_csv("C:/Users/cpetrosi/Documents/GitHub/WET-Dashboard/Static_Files/WET_dashboard_data.csv", na_values = "NAN")
+all_data = pd.read_csv(f"C:/Users/{user_path}/Documents/GitHub/WET-Dashboard/Static_Files/WET_dashboard_data.csv", na_values = "NAN")
 ## Call each tower DF, set up proper datetime column, combine at end
 
 # VAC_flux = pd.read_csv(f"C:/Users/{user_path}/Box/TREX/MISCELLANEOUS/Datalogger_Report_Files/suplementary/flux_notes_and_soilvue/VAC_Flux_Notes.dat", header = [0], skiprows = [0,2,3])
