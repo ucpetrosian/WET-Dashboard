@@ -41,8 +41,8 @@ for param_name in cols:
 site_dict = {
   "WET01": "CAP_001",
   "WET02": "CAP_002",
-  "WET03": "WET_003",
-  "WET04": "WET_004"
+  "WET03": "WIN_001",
+  "WET04": "OAK_001"
 }
 
 gen_df = pd.DataFrame()

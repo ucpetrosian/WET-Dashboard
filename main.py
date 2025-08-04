@@ -62,20 +62,33 @@ for name in range_names.Variable_Name.unique():
 
 ## When called, fills multiselect with options based on sensor
 def return_options(sensor, df):
-    return df.loc[df.Sensor == sensor].Variable_Name.unique()
+    if sensor != "MET_SOIL":
+      return df.loc[df.Sensor == sensor].Variable_Name.unique()
+    else:
+      return ["SWC", "TS", "SEC", "T_SOIL"]
 
 ## Trims main DF to only selected tower, then renames columns to add units
 def update_df(df, site, option, unit_dict = unit_dict):
     plot_df = df.loc[df.site == site]
     for col in option:
-        plot_df = plot_df.rename(columns = {col: unit_dict[col]})
+        if col in ["SWC", "TS", "SEC"]:
+            for num in range(1,10):
+                temp_str = col + "_1_"+str(num)+"_1"
+                plot_df = plot_df.rename(columns = {temp_str: unit_dict[temp_str]})
+        else:
+            plot_df = plot_df.rename(columns = {col: unit_dict[col]})
     return plot_df
 
 ## Adds units to columns to pass through plot
 def update_col_names(option, unit_dict = unit_dict):
     out = []
     for name in option:
-        out.append(unit_dict[name])
+        if name in ["SWC", "TS", "SEC"]:
+            for num in range(1,10):
+                temp_str = name + "_1_"+str(num)+"_1"
+                out.append(unit_dict[temp_str])
+        else:
+            out.append(unit_dict[name])
     return out
 
 ## Create and name sidebar
@@ -83,7 +96,7 @@ st.sidebar.header("Plot Adjustments")
 
 ## Puts station selector in sidebar, returns selected station
 site = st.sidebar.selectbox("Select Station:",
-                            ["CAP_001", "CAP_002", "WET_003", "WET_004"], index = 0)
+                            ["CAP_001", "CAP_002", "WIN_001", "OAK_001"], index = 0)
 
 ## Puts sensor selector in sidebar, returns selected sensor, options populated by range_names csv
 sensor_type = st.sidebar.selectbox("Select Sensor Type:",
@@ -97,11 +110,11 @@ option = st.sidebar.multiselect("Select Measurement:",
 ## Uses plotly chart to plot data, uses aforementioned functions for label/DF setup
 ## Y-axis labels set using passed columns via multiselector
 ## Range is set using range_names csv
-st.plotly_chart(px.line(update_df(all_data, site, option), x = "TIMESTAMP", y = update_col_names(option),
+st.plotly_chart(px.line(update_df(all_data, site, option), x = "TIMESTAMP", y = update_col_names(option)))
                         # labels = {"value": " / ".join(option)},
                         # range_y = [min(range_names.loc[range_names.Variable_Name.isin(option)].Range_Low),
                         #         max(range_names.loc[range_names.Variable_Name.isin(option)].Range_High)]
-                                ))
+                                
 
 
 ## Grabs ranges for relevant columns, highlights any values that fall outside of range for given column
@@ -119,8 +132,16 @@ def highlight_outliers(row):
     return styles
 
 ## Trims DF based on station, applies style function
-def dataframe_styler(df):
-    ret_df = df.loc[df.site == site, ["TIMESTAMP"] + option]
+def dataframe_styler(df, option = option, site = site):
+    revis_col = []
+    for col in option:
+        if col in ["SWC", "TS", "SEC"]:
+            for num in range(1,10):
+                temp_str = col + "_1_"+str(num)+"_1"
+                revis_col.append(temp_str)
+        else:
+            revis_col.append(col)
+    ret_df = df.loc[df.site == site, ["TIMESTAMP"] + revis_col]
     return ret_df.style.apply(highlight_outliers, axis = 1)
 
 
