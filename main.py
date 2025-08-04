@@ -142,6 +142,7 @@ def dataframe_styler(df, option = option, site = site):
         else:
             revis_col.append(col)
     ret_df = df.loc[df.site == site, ["TIMESTAMP"] + revis_col]
+    ret_df = ret_df.dropna()
     return ret_df.style.apply(highlight_outliers, axis = 1)
 
 
