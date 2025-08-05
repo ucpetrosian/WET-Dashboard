@@ -14,9 +14,6 @@ import plotly
 import plotly.express as px
 
 
-
-
-
 ## Default makes elements wide on dashboard
 st.set_page_config(layout = "wide")  
 
@@ -32,14 +29,6 @@ all_data = pd.read_csv(io.StringIO(download.decode('utf-8')), index_col = [0])
 csv_url = 'https://raw.githubusercontent.com/ucpetrosian/WET-Dashboard/master/Static_Files/MET_station_ranges.csv'
 download = github_session.get(csv_url).content
 range_names = pd.read_csv(io.StringIO(download.decode('utf-8')))
-
-
-
-# user_path = "mrcoo"
-
-# range_names = pd.read_csv(f"C:/Users/{user_path}/Documents/GitHub/WET-Dashboard/Static_Files/MET_station_ranges.csv")
-
-# all_data = pd.read_csv(f"C:/Users/{user_path}/Documents/GitHub/WET-Dashboard/Static_Files/WET_dashboard_data.csv", na_values = "NAN")
 
 
 ## Only keeps data from last 30 days
