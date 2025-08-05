@@ -30,7 +30,6 @@ csv_url = 'https://raw.githubusercontent.com/ucpetrosian/WET-Dashboard/master/St
 download = github_session.get(csv_url).content
 range_names = pd.read_csv(io.StringIO(download.decode('utf-8')))
 
-
 ## Only keeps data from last 30 days
 all_data["TIMESTAMP"] = pd.to_datetime(all_data["TIMESTAMP"])
 last_month = date.today() - timedelta(days=30)
@@ -50,7 +49,8 @@ for name in range_names.Variable_Name.unique():
 
 
 ## When called, fills multiselect with options based on sensor
-def return_options(sensor, df):
+def return_options(sensor, df, site):
+    df = df.loc[df["Site"] == site]
     if sensor != "MET_SOIL":
       return df.loc[df.Sensor == sensor].Variable_Name.unique()
     else:
@@ -90,12 +90,12 @@ site = st.sidebar.selectbox("Select Station:",
 
 ## Puts sensor selector in sidebar, returns selected sensor, options populated by range_names csv
 sensor_type = st.sidebar.selectbox("Select Sensor Type:",
-                                  range_names.loc[range_names.Site == site].Sensor.unique(), index = 0)
+                                  range_names.loc[range_names["Site"] == site].Sensor.unique(), index = 0)
 
 ## Puts parameter selector in sidebar, fills option via aforementioned function,
 ## returns parameters to be put in plot
 option = st.sidebar.multiselect("Select Measurement:",
-                                return_options(sensor_type, range_names))
+                                return_options(sensor_type, range_names, site))
 
 ## Uses plotly chart to plot data, uses aforementioned functions for label/DF setup
 ## Y-axis labels set using passed columns via multiselector
