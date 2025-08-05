@@ -23,7 +23,7 @@ st.title("WET Dashboard")
 github_session = requests.Session()
 csv_url = 'https://raw.githubusercontent.com/ucpetrosian/WET-Dashboard/master/Static_Files/WET_dashboard_data.csv'
 download = github_session.get(csv_url).content
-all_data = pd.read_csv(io.StringIO(download.decode('utf-8')), index_col = [0])
+all_data = pd.read_csv(io.StringIO(download.decode('utf-8')), index_col = [0], na_values = "NAN")
 
 
 csv_url = 'https://raw.githubusercontent.com/ucpetrosian/WET-Dashboard/master/Static_Files/MET_station_ranges.csv'
@@ -37,7 +37,7 @@ last_month = date.today() - timedelta(days=30)
 last_month = np.datetime64(last_month)
 all_data = all_data[all_data["TIMESTAMP"] > last_month]
 # all_data = all_data.interpolate(method = "pad")    #########
-all_data = all_data.fillna(method = "ffill")
+
 ## Sets up dictionary to add units to legend in plot,
 ## Also sets up range dictionary
 unit_dict = dict()
@@ -66,6 +66,7 @@ def update_df(df, site, option, unit_dict = unit_dict):
                 plot_df = plot_df.rename(columns = {temp_str: unit_dict[temp_str]})
         else:
             plot_df = plot_df.rename(columns = {col: unit_dict[col]})
+    plot_df = plot_df.fillna(method = "ffill")
     return plot_df
 
 ## Adds units to columns to pass through plot
@@ -89,7 +90,7 @@ site = st.sidebar.selectbox("Select Station:",
 
 ## Puts sensor selector in sidebar, returns selected sensor, options populated by range_names csv
 sensor_type = st.sidebar.selectbox("Select Sensor Type:",
-                                  range_names.Sensor.unique(), index = 0)
+                                  range_names.loc[range_names.Site == site].Sensor.unique(), index = 0)
 
 ## Puts parameter selector in sidebar, fills option via aforementioned function,
 ## returns parameters to be put in plot
@@ -131,7 +132,8 @@ def dataframe_styler(df, option = option, site = site):
         else:
             revis_col.append(col)
     ret_df = df.loc[df.site == site, ["TIMESTAMP"] + revis_col]
-    ret_df = ret_df.dropna()
+    ret_df = ret_df.fillna(method = "ffill")
+    ret_df = ret_df.dropna(how = "all", subset = revis_col)
     return ret_df.style.apply(highlight_outliers, axis = 1)
 
 
