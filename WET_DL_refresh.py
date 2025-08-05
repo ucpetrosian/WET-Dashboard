@@ -49,6 +49,7 @@ gen_df = pd.DataFrame()
 ind_df = pd.DataFrame()
 soil_df = pd.DataFrame()
 rad_df = pd.DataFrame()
+flora_df = pd.DataFrame()
 
 sites = ["WET01", "WET02", "WET03", "WET04"]
 path = Path("C:/Users/cpetrosi/Box/TREX/MISCELLANEOUS/Datalogger_Report_Files/")
@@ -59,7 +60,7 @@ for i in range(0, len(sites)):
       if sites[i] == "WET01":
         print(temp)
         temp = temp[["TIMESTAMP", "BattV_Avg", "RH_Avg", "TA_Avg", "e_sat_probe_Avg", "e_probe_Avg",
-                        "VPD_Avg", "T_SOIL_Avg", "T_CANOPY_Avg", "WP_Avg", "PPFD_BC_IN_Avg", "PPFD_IN_Avg"]]
+                        "VPD_Avg", "T_SOIL_Avg", "T_CANOPY_Avg", "PPFD_BC_IN_Avg", "PPFD_IN_Avg"]]
       else:
         temp = temp[["TIMESTAMP", "BattV_Avg", "RH_Avg", "TA_Avg", "e_sat_probe_Avg", "e_probe_Avg",
                         "VPD_Avg", "T_SOIL_Avg", "T_CANOPY_Avg"]]
@@ -93,8 +94,15 @@ for i in range(0, len(sites)):
       temp["site"] = site_dict[sites[i]]
       rad_df = pd.concat([rad_df, temp])
     
+    elif str(name).split(".")[0].split("_")[-1] == "FLORAP":
+      temp = pd.read_csv(name, header = [0], skiprows = [0,2,3])
+      temp = temp[["TIMESTAMP", "WP_Avg"]]
+      temp["site"] = site_dict[sites[i]]
+      flora_df = pd.concat([flora_df, temp])
+    
 
 p1 = gen_df.merge(ind_df, on = ["TIMESTAMP", "site"], how = "outer")
+p1 = p1.merge(flora_df, on = ["TIMESTAMP", "site"], how = "outer")
 p2 = rad_df.merge(soil_df, on = ["TIMESTAMP", "site"], how = "outer")
 
 fin = p1.merge(p2, on = ["TIMESTAMP", "site"], how = "outer")

@@ -85,6 +85,7 @@ T_CANOPY,Biological,0,50,deg C,CAP_002
 BattV,MET_ATM,10,15,V,CAP_002
 e_sat_probe,MET_ATM,-1,10,kPa,CAP_002
 e_probe,MET_ATM,0,6,kPa,CAP_002
+WP,Biological,-30,0,Bar,CAP_002
 RH,MET_ATM,0,100,%,WIN_001
 TA,MET_ATM,-10,50,deg C,WIN_001
 VPD,MET_ATM,-10,50,hPa,WIN_001
@@ -124,6 +125,7 @@ LW_OUT,MET_RAD,300,650,W m-2,WIN_001
 T_CANOPY,Biological,0,50,deg C,WIN_001
 BattV,MET_ATM,10,15,V,WIN_001
 e_sat_probe,MET_ATM,-1,10,kPa,WIN_001
+WP,Biological,-30,0,Bar,WIN_001
 e_probe,MET_ATM,0,6,kPa,WIN_001
 RH,MET_ATM,0,100,%,OAK_001
 TA,MET_ATM,-10,50,deg C,OAK_001
@@ -165,3 +167,4 @@ T_CANOPY,Biological,0,50,deg C,OAK_001
 BattV,MET_ATM,10,15,V,OAK_001
 e_sat_probe,MET_ATM,-1,10,kPa,OAK_001
 e_probe,MET_ATM,0,6,kPa,OAK_001
+WP,Biological,-30,0,Bar,OAK_001
