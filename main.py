@@ -101,7 +101,7 @@ option = st.sidebar.multiselect("Select Measurement:",
 ## Y-axis labels set using passed columns via multiselector
 ## Range is set using range_names csv
 fig = px.line(update_df(all_data, site, option), x = "TIMESTAMP", y = update_col_names(option))
-fig.update_layout(dragmode = "pan", scrollZoom = True)
+fig.update_layout(dragmode = "pan")
 st.plotly_chart(fig)
                         # labels = {"value": " / ".join(option)},
                         # range_y = [min(range_names.loc[range_names.Variable_Name.isin(option)].Range_Low),
