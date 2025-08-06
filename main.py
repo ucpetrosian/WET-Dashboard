@@ -35,7 +35,7 @@ all_data["TIMESTAMP"] = pd.to_datetime(all_data["TIMESTAMP"])
 last_month = date.today() - timedelta(days=30)
 last_month = np.datetime64(last_month)
 all_data = all_data[all_data["TIMESTAMP"] > last_month]
-# all_data = all_data.interpolate(method = "pad")    #########
+
 
 ## Sets up dictionary to add units to legend in plot,
 ## Also sets up range dictionary
