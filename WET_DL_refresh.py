@@ -112,4 +112,4 @@ for col in fin.columns:
     fin = fin.rename(columns = {col: avg_dict[col]})
 
 
-fin.to_csv("C:/Users/cpetrosi/Documents/GitHub/WET-Dashboard/Static_Files/WET_dashboard_data.csv")
+fin.to_csv("C:/Users/cpetrosi/WET-Dashboard/Static_Files/WET_dashboard_data.csv")
