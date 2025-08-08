@@ -7,21 +7,13 @@ from datetime import date
 from dateutil.relativedelta import relativedelta
 import numpy as np
 import requests
-import folium as fl
-from streamlit_folium import st_folium
-import streamlit as st
 import numpy as np
 from pathlib import Path
 import os
-import sys
-import shutil
-import geopandas as gpd
 from IPython.display import display
-import plotly
-import plotly.express as px
-from shapely.geometry import Point
 import datetime
 
+user = "cpetrosi"
 
 avg_dict = dict()
 
@@ -52,8 +44,10 @@ rad_df = pd.DataFrame()
 flora_df = pd.DataFrame()
 
 sites = ["WET01", "WET02", "WET03", "WET04"]
-path = Path("C:/Users/cpetrosi/Box/TREX/MISCELLANEOUS/Datalogger_Report_Files/")
+path = Path(f"C:/Users/{user}/Box/TREX/MISCELLANEOUS/Datalogger_Report_Files/")
 for i in range(0, len(sites)):
+  print(gen_df)
+  print(ind_df)
   for name in path.glob("*"+sites[i]+"*.dat"):
     if str(name).split(".")[0].split("_")[-1] == "General":
       temp = pd.read_csv(name, header = [0], skiprows = [0,2,3])
@@ -100,6 +94,8 @@ for i in range(0, len(sites)):
       temp["site"] = site_dict[sites[i]]
       flora_df = pd.concat([flora_df, temp])
     
+print(gen_df)
+print(ind_df)
 
 p1 = gen_df.merge(ind_df, on = ["TIMESTAMP", "site"], how = "outer")
 p1 = p1.merge(flora_df, on = ["TIMESTAMP", "site"], how = "outer")
@@ -112,4 +108,4 @@ for col in fin.columns:
     fin = fin.rename(columns = {col: avg_dict[col]})
 
 
-fin.to_csv("C:/Users/cpetrosi/WET-Dashboard/Static_Files/WET_dashboard_data.csv")
+fin.to_csv(f"C:/Users/{user}/Documents/Github/WET-Dashboard/Static_Files/WET_dashboard_data.csv")
