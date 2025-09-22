@@ -36,41 +36,43 @@ site_dict = {
   "WET03": "WIN_001",
   "WET04": "OAK_001"
 }
-
-gen_df = pd.DataFrame()
-ind_df = pd.DataFrame()
-soil_df = pd.DataFrame()
-rad_df = pd.DataFrame()
-flora_df = pd.DataFrame()
+template = pd.read_csv(f"C:/Users/{user}/Box/TREX/MISCELLANEOUS/Datalogger_Report_Files/WET01_T_General.dat", header = [0], skiprows = [0,2,3])
+template = pd.to_datetime(template["TIMESTAMP"])
+fin_df = pd.DataFrame()
 
 sites = ["WET01", "WET02", "WET03", "WET04"]
 path = Path(f"C:/Users/{user}/Box/TREX/MISCELLANEOUS/Datalogger_Report_Files/")
 for i in range(0, len(sites)):
-  print(gen_df)
-  print(ind_df)
+  gen_df = template
+  ind_df = template
+  soil_df = template
+  rad_df = template
+  flora_df = pd.DataFrame()
+  indices = False
   for name in path.glob("*"+sites[i]+"*.dat"):
     if str(name).split(".")[0].split("_")[-1] == "General":
       temp = pd.read_csv(name, header = [0], skiprows = [0,2,3])
       if sites[i] == "WET01":
-        print(temp)
-        temp = temp[["TIMESTAMP", "BattV_Avg", "RH_Avg", "TA_Avg", "e_sat_probe_Avg", "e_probe_Avg",
+        gen_df = temp[["TIMESTAMP", "BattV_Avg", "RH_Avg", "TA_Avg", "e_sat_probe_Avg", "e_probe_Avg",
                         "VPD_Avg", "T_SOIL_Avg", "T_CANOPY_Avg", "PPFD_BC_IN_Avg", "PPFD_IN_Avg"]]
+      elif sites[i] == "WET02" or sites[i] == "WET03":
+        gen_df = temp[["TIMESTAMP", "BattV_Avg", "RH_Avg", "TA_Avg", "e_sat_probe_Avg", "e_probe_Avg",
+                        "VPD_Avg", "T_SOIL_Avg", "T_CANOPY_Avg", "SPEC_RED_REFL_Avg", "SPEC_NIR_REFL_Avg",
+                        "NDVI_Avg", "ARVI2_Avg", "IPVI_Avg", "DVI_Avg", "SR_Avg", "MSR_Avg"]]
       else:
-        temp = temp[["TIMESTAMP", "BattV_Avg", "RH_Avg", "TA_Avg", "e_sat_probe_Avg", "e_probe_Avg",
+        gen_df = temp[["TIMESTAMP", "BattV_Avg", "RH_Avg", "TA_Avg", "e_sat_probe_Avg", "e_probe_Avg",
                         "VPD_Avg", "T_SOIL_Avg", "T_CANOPY_Avg"]]
-      temp["site"] = site_dict[sites[i]]
-      gen_df = pd.concat([gen_df, temp])
-        
+      gen_df["TIMESTAMP"] = pd.to_datetime(gen_df["TIMESTAMP"])
     elif str(name).split(".")[0].split("_")[-1] == "Indices":
       temp = pd.read_csv(name, header = [0], skiprows = [0,2,3])
-      temp = temp[["TIMESTAMP", "SPEC_RED_REFL_Avg", "SPEC_NIR_REFL_Avg", "NDVI_Avg", "ARVI2_Avg",
+      ind_df = temp[["TIMESTAMP", "SPEC_RED_REFL_Avg", "SPEC_NIR_REFL_Avg", "NDVI_Avg", "ARVI2_Avg",
                 "IPVI_Avg", "DVI_Avg", "SR_Avg", "MSR_Avg"]]
-      temp["site"] = site_dict[sites[i]]
-      ind_df = pd.concat([ind_df, temp])
+      ind_df["TIMESTAMP"] = pd.to_datetime(ind_df["TIMESTAMP"])
+      indices = True
 
     elif str(name).split(".")[0].split("_")[-1] == "SOILVUE":
       temp = pd.read_csv(name, header = [0], skiprows = [0,2,3])
-      temp = temp[["TIMESTAMP", "SWC_1_1_1_Avg", "SWC_1_2_1_Avg", "SWC_1_3_1_Avg", "SWC_1_4_1_Avg",
+      soil_df = temp[["TIMESTAMP", "SWC_1_1_1_Avg", "SWC_1_2_1_Avg", "SWC_1_3_1_Avg", "SWC_1_4_1_Avg",
                 "SWC_1_5_1_Avg", "SWC_1_6_1_Avg", "SWC_1_7_1_Avg", "SWC_1_8_1_Avg", "SWC_1_9_1_Avg",
                 "Ka_1_1_1_Avg", "Ka_1_2_1_Avg", "Ka_1_3_1_Avg", "Ka_1_4_1_Avg",
                 "Ka_1_5_1_Avg", "Ka_1_6_1_Avg", "Ka_1_7_1_Avg", "Ka_1_8_1_Avg", "Ka_1_9_1_Avg",
@@ -78,34 +80,41 @@ for i in range(0, len(sites)):
                 "TS_1_5_1_Avg", "TS_1_6_1_Avg", "TS_1_7_1_Avg", "TS_1_8_1_Avg", "TS_1_9_1_Avg",
                 "SEC_1_1_1_Avg", "SEC_1_2_1_Avg", "SEC_1_3_1_Avg", "SEC_1_4_1_Avg",
                 "SEC_1_5_1_Avg", "SEC_1_6_1_Avg", "SEC_1_7_1_Avg", "SEC_1_8_1_Avg", "SEC_1_9_1_Avg"]]
-      temp["site"] = site_dict[sites[i]]
-      soil_df = pd.concat([soil_df, temp])
+      soil_df["TIMESTAMP"] = pd.to_datetime(soil_df["TIMESTAMP"])
 
     elif str(name).split(".")[0].split("_")[-1] == "Rad":
       temp = pd.read_csv(name, header = [0], skiprows = [0,2,3])
-      temp = temp[["TIMESTAMP", "SW_IN_Avg", "SW_OUT_Avg",
+      rad_df = temp[["TIMESTAMP", "SW_IN_Avg", "SW_OUT_Avg",
                 "LW_IN_Avg", "LW_OUT_Avg", "NETRAD_Avg"]]
-      temp["site"] = site_dict[sites[i]]
-      rad_df = pd.concat([rad_df, temp])
-    
+      rad_df["TIMESTAMP"] = pd.to_datetime(rad_df["TIMESTAMP"])
     elif str(name).split(".")[0].split("_")[-1] == "FLORAP":
       temp = pd.read_csv(name, header = [0], skiprows = [0,2,3])
-      temp = temp[["TIMESTAMP", "WP_Avg"]]
-      temp["site"] = site_dict[sites[i]]
-      flora_df = pd.concat([flora_df, temp])
-    
-print(gen_df)
-print(ind_df)
-
-p1 = gen_df.merge(ind_df, on = ["TIMESTAMP", "site"], how = "outer")
-p1 = p1.merge(flora_df, on = ["TIMESTAMP", "site"], how = "outer")
-p2 = rad_df.merge(soil_df, on = ["TIMESTAMP", "site"], how = "outer")
-
-fin = p1.merge(p2, on = ["TIMESTAMP", "site"], how = "outer")
+      flora_df = temp[["TIMESTAMP", "WP_Avg"]]
+      flora_df["TIMESTAMP"] = pd.to_datetime(flora_df["TIMESTAMP"])
+  if indices == True:
+    print(i)
+    p1 = gen_df.merge(ind_df, on = ["TIMESTAMP"], how = "outer")
+    p1 = p1.merge(flora_df, on = ["TIMESTAMP"], how = "outer")
+    p2 = rad_df.merge(soil_df, on = ["TIMESTAMP"], how = "outer")
+    fin = p1.merge(p2, on = ["TIMESTAMP"], how = "outer")
+    fin["site"] = site_dict[sites[i]]
+    fin_df = pd.concat([fin_df, fin])
+  elif i != 1:
+    p1 = gen_df.merge(flora_df, on = ["TIMESTAMP"], how = "outer")
+    p2 = rad_df.merge(soil_df, on = ["TIMESTAMP"], how = "outer")
+    fin = p1.merge(p2, on = ["TIMESTAMP"], how = "outer")
+    fin["site"] = site_dict[sites[i]]
+    fin_df = pd.concat([fin_df, fin])
+  else:
+    p1 = gen_df.merge(flora_df, on = ["TIMESTAMP"], how = "outer")
+    p2 = p1.merge(soil_df, on = ["TIMESTAMP"], how = "outer")
+    fin = p2
+    fin["site"] = site_dict[sites[i]]
+    fin_df = pd.concat([fin_df, fin])
 
 for col in fin.columns:
   if col not in ["TIMESTAMP", "site"]:
-    fin = fin.rename(columns = {col: avg_dict[col]})
+    fin_df = fin_df.rename(columns = {col: avg_dict[col]})
 
 
-fin.to_csv(f"C:/Users/{user}/Documents/Github/WET-Dashboard/Static_Files/WET_dashboard_data.csv")
+fin_df.to_csv(f"C:/Users/{user}/Documents/Github/WET-Dashboard/Static_Files/WET_dashboard_data.csv")

@@ -24,11 +24,14 @@ github_session = requests.Session()
 csv_url = 'https://raw.githubusercontent.com/ucpetrosian/WET-Dashboard/master/Static_Files/WET_dashboard_data.csv'
 download = github_session.get(csv_url).content
 all_data = pd.read_csv(io.StringIO(download.decode('utf-8')), index_col = [0], na_values = "NAN")
+# all_data = pd.read_csv("C:/Users/cpetrosi/Documents/GitHub/WET-Dashboard/Static_Files/WET_dashboard_data.csv", na_values = "NAN")
+
 
 
 csv_url = 'https://raw.githubusercontent.com/ucpetrosian/WET-Dashboard/master/Static_Files/MET_station_ranges.csv'
 download = github_session.get(csv_url).content
 range_names = pd.read_csv(io.StringIO(download.decode('utf-8')))
+# range_names = pd.read_csv("C:/Users/cpetrosi/Documents/GitHub/WET-Dashboard/Static_Files/MET_station_ranges.csv")
 
 ## Only keeps data from last 30 days
 all_data["TIMESTAMP"] = pd.to_datetime(all_data["TIMESTAMP"])
