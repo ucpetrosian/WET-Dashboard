@@ -46,10 +46,10 @@ for i in range(0, len(sites)):
   for name in path.glob("*"+sites[i]+"*.dat"):
     if str(name).split(".")[0].split("_")[-1] == "General":
       temp = pd.read_csv(name, header = [0], skiprows = [0,2,3])
-      if sites[i] == "WET01":
+      if sites[i] == "CAP_001":
         gen_df = temp[["TIMESTAMP", "BattV_Avg", "RH_Avg", "TA_Avg", "e_sat_probe_Avg", "e_probe_Avg",
                         "VPD_Avg", "T_SOIL_Avg", "T_CANOPY_Avg", "PPFD_BC_IN_Avg", "PPFD_IN_Avg"]]
-      elif sites[i] == "WET02" or sites[i] == "WET03":
+      elif sites[i] == "CAP_002" or sites[i] == "WIN_001":
         gen_df = temp[["TIMESTAMP", "BattV_Avg", "RH_Avg", "TA_Avg", "e_sat_probe_Avg", "e_probe_Avg",
                         "VPD_Avg", "T_SOIL_Avg", "T_CANOPY_Avg", "SPEC_RED_REFL_Avg", "SPEC_NIR_REFL_Avg",
                         "NDVI_Avg", "ARVI2_Avg", "IPVI_Avg", "DVI_Avg", "SR_Avg", "MSR_Avg"]]
