@@ -30,18 +30,12 @@ cols = ["BattV_Avg", "RH_Avg", "TA_Avg", "e_sat_probe_Avg", "e_probe_Avg", "VPD_
 for param_name in cols:
   avg_dict[param_name] = param_name.replace("_Avg", "")
 
-site_dict = {
-  "WET01": "CAP_001",
-  "WET02": "CAP_002",
-  "WET03": "WIN_001",
-  "WET04": "OAK_001"
-}
-template = pd.read_csv(f"C:/Users/{user}/Box/TREX/MISCELLANEOUS/Datalogger_Report_Files/WET01_T_General.dat", header = [0], skiprows = [0,2,3])
+template = pd.read_csv(f"C:/Users/{user}/Box/TREX/MISCELLANEOUS/Datalogger_Report_Files/WETS/CAP_001_T_General.dat", header = [0], skiprows = [0,2,3])
 template = pd.to_datetime(template["TIMESTAMP"])
 fin_df = pd.DataFrame()
 
-sites = ["WET01", "WET02", "WET03", "WET04"]
-path = Path(f"C:/Users/{user}/Box/TREX/MISCELLANEOUS/Datalogger_Report_Files/")
+sites = ["CAP_001", "CAP_002", "WIN_001", "OAK_001"]
+path = Path(f"C:/Users/{user}/Box/TREX/MISCELLANEOUS/Datalogger_Report_Files/WETS")
 for i in range(0, len(sites)):
   gen_df = template
   ind_df = template
@@ -97,19 +91,19 @@ for i in range(0, len(sites)):
     p1 = p1.merge(flora_df, on = ["TIMESTAMP"], how = "outer")
     p2 = rad_df.merge(soil_df, on = ["TIMESTAMP"], how = "outer")
     fin = p1.merge(p2, on = ["TIMESTAMP"], how = "outer")
-    fin["site"] = site_dict[sites[i]]
+    fin["site"] = sites[i]
     fin_df = pd.concat([fin_df, fin])
   elif i != 1:
     p1 = gen_df.merge(flora_df, on = ["TIMESTAMP"], how = "outer")
     p2 = rad_df.merge(soil_df, on = ["TIMESTAMP"], how = "outer")
     fin = p1.merge(p2, on = ["TIMESTAMP"], how = "outer")
-    fin["site"] = site_dict[sites[i]]
+    fin["site"] = sites[i]
     fin_df = pd.concat([fin_df, fin])
   else:
     p1 = gen_df.merge(flora_df, on = ["TIMESTAMP"], how = "outer")
     p2 = p1.merge(soil_df, on = ["TIMESTAMP"], how = "outer")
     fin = p2
-    fin["site"] = site_dict[sites[i]]
+    fin["site"] = sites[i]
     fin_df = pd.concat([fin_df, fin])
 
 for col in fin.columns:
