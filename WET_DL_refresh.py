@@ -12,6 +12,8 @@ from pathlib import Path
 import os
 from IPython.display import display
 import datetime
+import warnings
+warnings.filterwarnings('ignore')
 
 user = "cpetrosi"
 
@@ -86,7 +88,6 @@ for i in range(0, len(sites)):
       flora_df = temp[["TIMESTAMP", "WP_Avg"]]
       flora_df["TIMESTAMP"] = pd.to_datetime(flora_df["TIMESTAMP"])
   if indices == True:
-    print(i)
     p1 = gen_df.merge(ind_df, on = ["TIMESTAMP"], how = "outer")
     p1 = p1.merge(flora_df, on = ["TIMESTAMP"], how = "outer")
     p2 = rad_df.merge(soil_df, on = ["TIMESTAMP"], how = "outer")

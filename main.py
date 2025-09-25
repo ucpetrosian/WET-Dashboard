@@ -26,7 +26,7 @@ download = github_session.get(csv_url).content
 all_data = pd.read_csv(io.StringIO(download.decode('utf-8')), index_col = [0], na_values = ["NAN", "inf"])
 all_data = all_data[all_data["MSR"] > -100]
 # all_data = pd.read_csv("C:/Users/cpetrosi/Documents/GitHub/WET-Dashboard/Static_Files/WET_dashboard_data.csv", na_values = "NAN")
-
+# print(all_data.loc[all_data.site == "CAP_002", "NDVI"])
 
 
 csv_url = 'https://raw.githubusercontent.com/ucpetrosian/WET-Dashboard/master/Static_Files/MET_station_ranges.csv'
