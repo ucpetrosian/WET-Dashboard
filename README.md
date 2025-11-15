@@ -1,6 +1,6 @@
 This is the repository used to host the internal SAWS USDA-ARS dashboard which observes datalogger data incoming from the newly erected WET towers.
 
-Repository and dashboard created by Audrey Petrosian (crpetrosian@ucdavis.edu), contact for questions about data.
+Repository and dashboard created by Audrey P. (crpetrosian@ucdavis.edu), contact for questions about data.
 
 Scripts:
 
