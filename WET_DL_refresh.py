@@ -110,6 +110,5 @@ for i in range(0, len(sites)):
 for col in fin.columns:
   if col not in ["TIMESTAMP", "site"]:
     fin_df = fin_df.rename(columns = {col: avg_dict[col]})
-
-
+fin_df = fin_df.drop_duplicates()
 fin_df.to_csv(f"C:/Users/{user}/Documents/Github/WET-Dashboard/Static_Files/WET_dashboard_data.csv")
