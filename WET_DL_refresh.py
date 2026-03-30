@@ -36,7 +36,7 @@ template = pd.read_csv(f"C:/Users/{user}/Box/TREX/MISCELLANEOUS/Datalogger_Repor
 template = pd.to_datetime(template["TIMESTAMP"])
 fin_df = pd.DataFrame()
 
-sites = ["CAP_001", "CAP_002", "WIN_001", "OAK_001"]
+sites = ["CAP_001", "CAP_002", "WIN_001", "OAK_001", "CHW_001", "GLE_001"]
 path = Path(f"C:/Users/{user}/Box/TREX/MISCELLANEOUS/Datalogger_Report_Files/WETS")
 for i in range(0, len(sites)):
   gen_df = template

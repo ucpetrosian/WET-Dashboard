@@ -94,7 +94,7 @@ st.sidebar.header("Plot Adjustments")
 
 ## Puts station selector in sidebar, returns selected station
 site = st.sidebar.selectbox("Select Station:",
-                            ["CAP_001", "CAP_002", "WIN_001", "OAK_001"], index = 0)
+                            ["CAP_001", "CAP_002", "WIN_001", "OAK_001", "CHW_001", "GLE_001"], index = 0)
 
 ## Puts sensor selector in sidebar, returns selected sensor, options populated by range_names csv
 sensor_type = st.sidebar.selectbox("Select Sensor Type:",
