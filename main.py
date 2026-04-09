@@ -51,8 +51,8 @@ unit_dict = dict()
 range_dict = dict()
 for name in range_names.Variable_Name.unique():
     unit_dict[name] = name + " (" + range_names.loc[range_names.Variable_Name == name, "Units"].iloc[0] + ")"
-    low = range_names.loc[range_names.Variable_Name == name, ["Range_Low"]].iloc[0]
-    high = range_names.loc[range_names.Variable_Name == name, ["Range_High"]].iloc[0]
+    low = range_names.loc[range_names.Variable_Name == name, ["Range_Low"]].iloc[0,0]
+    high = range_names.loc[range_names.Variable_Name == name, ["Range_High"]].iloc[0,0]
     range_dict[name] = (float(low), float(high))
 
 
