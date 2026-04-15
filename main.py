@@ -38,12 +38,10 @@ def import_data():
 
 all_data, range_names = import_data()
 
-## Only keeps data from last 30 days
 all_data["TIMESTAMP"] = pd.to_datetime(all_data["TIMESTAMP"])
 last_month = date.today() - timedelta(days=30)
 last_month = np.datetime64(last_month)
 all_data = all_data[all_data["TIMESTAMP"] > last_month]
-
 
 ## Sets up dictionary to add units to legend in plot,
 ## Also sets up range dictionary
@@ -74,7 +72,7 @@ def update_df(df, site, option, unit_dict = unit_dict):
                 plot_df = plot_df.rename(columns = {temp_str: unit_dict[temp_str]})
         else:
             plot_df = plot_df.rename(columns = {col: unit_dict[col]})
-    plot_df = plot_df.fillna(method = "ffill")
+    plot_df = plot_df.ffill()
     return plot_df
 
 ## Adds units to columns to pass through plot
@@ -108,7 +106,8 @@ option = st.sidebar.multiselect("Select Measurement:",
 ## Uses plotly chart to plot data, uses aforementioned functions for label/DF setup
 ## Y-axis labels set using passed columns via multiselector
 ## Range is set using range_names csv
-fig = px.line(update_df(all_data, site, option), x = "TIMESTAMP", y = update_col_names(option))
+fig = px.line(update_df(all_data, site, option), x = "TIMESTAMP", y = update_col_names(option),
+              range_y = [range_names.loc[range_names.Variable_Name.isin(option), "Range_Low"].min(),range_names.loc[range_names.Variable_Name.isin(option), "Range_High"].max()])
 fig.update_layout(dragmode = "pan")
 st.plotly_chart(fig)
                         # labels = {"value": " / ".join(option)},
@@ -142,7 +141,7 @@ def dataframe_styler(df, option = option, site = site):
         else:
             revis_col.append(col)
     ret_df = df.loc[df.site == site, ["TIMESTAMP"] + revis_col]
-    ret_df = ret_df.fillna(method = "ffill")
+    # ret_df = ret_df.ffill()
     ret_df = ret_df.dropna(how = "all", subset = revis_col)
     return ret_df.style.apply(highlight_outliers, axis = 1)
 
