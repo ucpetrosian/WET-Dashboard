@@ -12,24 +12,28 @@ import os
 from IPython.display import display
 import plotly
 import plotly.express as px
-
+from supabase import create_client
+import json
+from io import StringIO
 
 ## Default makes elements wide on dashboard
 st.set_page_config(layout = "wide")  
 
+client = create_client(
+    st.secrets["supabase"]["url"],
+    st.secrets["supabase"]["key"]
+)
 
 st.title("WET Dashboard")
 
 @st.cache_resource
 def import_data():
-  github_session = requests.Session()
-  csv_url = 'https://raw.githubusercontent.com/ucpetrosian/WET-Dashboard/master/Static_Files/WET_dashboard_data.csv'
-  download = github_session.get(csv_url).content
-  all_data = pd.read_csv(io.StringIO(download.decode('utf-8')), index_col = [0], na_values = ["NAN", "inf"])
+  res = client.table("wet_dashboard").select("data").eq("data_name", "all_data").eq("id", 500).execute()
+  all_data = pd.read_json(StringIO(json.dumps(res.data[0]["data"])))
   # all_data = pd.read_csv("C:/Users/cpetrosi/Documents/GitHub/WET-Dashboard/Static_Files/WET_dashboard_data.csv", na_values = "NAN")
   # print(all_data.loc[all_data.site == "CAP_002", "NDVI"])
   
-  
+  github_session = requests.Session()
   csv_url2 = 'https://raw.githubusercontent.com/ucpetrosian/WET-Dashboard/master/Static_Files/MET_station_ranges.csv'
   download = github_session.get(csv_url2).content
   range_names = pd.read_csv(io.StringIO(download.decode('utf-8')))

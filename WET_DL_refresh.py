@@ -13,7 +13,10 @@ import os
 from IPython.display import display
 import datetime
 import warnings
+from supabase import create_client
+import json
 warnings.filterwarnings('ignore')
+
 
 user = "cpetrosi"
 
@@ -32,12 +35,12 @@ cols = ["BattV_Avg", "RH_Avg", "TA_Avg", "e_sat_probe_Avg", "e_probe_Avg", "VPD_
 for param_name in cols:
   avg_dict[param_name] = param_name.replace("_Avg", "")
 
-template = pd.read_csv(f"C:/Users/{user}/Box/TREX/MISCELLANEOUS/Datalogger_Report_Files/WETS/CAP_001_T_General.dat", header = [0], skiprows = [0,2,3])
+template = pd.read_csv(f"C:/Users/{user}/Box/DATA_CUBBIES/Mina_S/Datalogger_Report_Files/WET_Stations/CAP_001_T_General.dat", header = [0], skiprows = [0,2,3])
 template = pd.to_datetime(template["TIMESTAMP"])
 fin_df = pd.DataFrame()
 
 sites = ["CAP_001", "CAP_002", "WIN_001", "OAK_001", "CHW_001", "GLE_001"]
-path = Path(f"C:/Users/{user}/Box/TREX/MISCELLANEOUS/Datalogger_Report_Files/WETS")
+path = Path(f"C:/Users/{user}/Box/DATA_CUBBIES/Mina_S/Datalogger_Report_Files/WET_Stations")
 for i in range(0, len(sites)):
   gen_df = template
   ind_df = template
@@ -87,13 +90,22 @@ for i in range(0, len(sites)):
       temp = pd.read_csv(name, header = [0], skiprows = [0,2,3])
       flora_df = temp[["TIMESTAMP", "WP_Avg"]]
       flora_df["TIMESTAMP"] = pd.to_datetime(flora_df["TIMESTAMP"])
+  print(sites[i])
+  print(i)
   if indices == True:
-    p1 = gen_df.merge(ind_df, on = ["TIMESTAMP"], how = "outer")
-    p1 = p1.merge(flora_df, on = ["TIMESTAMP"], how = "outer")
-    p2 = rad_df.merge(soil_df, on = ["TIMESTAMP"], how = "outer")
-    fin = p1.merge(p2, on = ["TIMESTAMP"], how = "outer")
-    fin["site"] = sites[i]
-    fin_df = pd.concat([fin_df, fin])
+    if sites[i] == "CAP_002":
+      p1 = gen_df.merge(ind_df, on = ["TIMESTAMP"], how = "outer")
+      p1 = p1.merge(flora_df, on = ["TIMESTAMP"], how = "outer")
+      fin = p1.merge(soil_df, on = ["TIMESTAMP"], how = "outer")
+      fin["site"] = sites[i]
+      fin_df = pd.concat([fin_df, fin])
+    else:
+      p1 = gen_df.merge(ind_df, on = ["TIMESTAMP"], how = "outer")
+      p1 = p1.merge(flora_df, on = ["TIMESTAMP"], how = "outer")
+      p2 = rad_df.merge(soil_df, on = ["TIMESTAMP"], how = "outer")
+      fin = p1.merge(p2, on = ["TIMESTAMP"], how = "outer")
+      fin["site"] = sites[i]
+      fin_df = pd.concat([fin_df, fin])
   elif i != 1:
     p1 = gen_df.merge(flora_df, on = ["TIMESTAMP"], how = "outer")
     p2 = rad_df.merge(soil_df, on = ["TIMESTAMP"], how = "outer")
@@ -111,4 +123,18 @@ for col in fin.columns:
   if col not in ["TIMESTAMP", "site"]:
     fin_df = fin_df.rename(columns = {col: avg_dict[col]})
 fin_df = fin_df.drop_duplicates()
-fin_df.to_csv(f"C:/Users/{user}/Documents/Github/WET-Dashboard/Static_Files/WET_dashboard_data.csv")
+
+## Only keeps data from last 30 days
+fin_df["TIMESTAMP"] = pd.to_datetime(fin_df["TIMESTAMP"])
+last_month = date.today() - timedelta(days=30)
+last_month = np.datetime64(last_month)
+fin_df = fin_df[fin_df["TIMESTAMP"] > last_month]
+fin_df = fin_df.reset_index()
+print(fin_df)
+
+json_data = json.loads(fin_df.to_json())
+client.table("wet_dashboard").upsert({
+    "id": 500,
+    "data_name": "all_data",
+    "data": fin_df
+}).execute()
