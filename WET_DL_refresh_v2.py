@@ -11,9 +11,9 @@ warnings.filterwarnings('ignore')
 
 # ── Config ────────────────────────────────────────────────────────────────────
 client = create_client(st.secrets["supabase"]["url"], st.secrets["supabase"]["key"])
-user = "cpetrosi"
+user = "mrcoo"
 path = Path(f"C:/Users/{user}/Box/DATA_CUBBIES/Mina_S/Datalogger_Report_Files/WET_Stations")
-sites = ["CAP_001", "CAP_002", "WIN_001", "OAK_001", "CHW_001", "GLE_001"]
+sites = ["CAP_001", "CAP_002", "WIN_001", "OAK_001", "CHW_001", "GLE_001", "BAR_002"]
 
 cols = [
     "BattV_Avg", "RH_Avg", "TA_Avg", "e_sat_probe_Avg", "e_probe_Avg", "VPD_Avg",
@@ -28,7 +28,7 @@ cols = [
     "SEC_1_1_1_Avg", "SEC_1_2_1_Avg", "SEC_1_3_1_Avg", "SEC_1_4_1_Avg", "SEC_1_5_1_Avg",
     "SEC_1_6_1_Avg", "SEC_1_7_1_Avg", "SEC_1_8_1_Avg", "SEC_1_9_1_Avg",
     "SW_IN_Avg", "SW_OUT_Avg", "LW_IN_Avg", "LW_OUT_Avg", "NETRAD_Avg",
-    "PPFD_BC_IN_Avg", "PPFD_IN_Avg",
+    "PPFD_BC_IN_Avg", "PPFD_IN_Avg", "Water_Vol_Scan_Tot", "Flow_GPM_Avg", "Flow_GPM_Max"
 ]
 avg_dict = {col: col.replace("_Avg", "") for col in cols}
 
@@ -55,7 +55,7 @@ for site in sites:
 
     for name in sorted(path.glob(f"*{site}*.dat")):  # sorted for deterministic order
         suffix = name.stem.split("_")[-1]
-        if suffix in ("General", "HR"):
+        if suffix in ("General", "HR", "IRT"):
             continue
         print(f"  Reading: {name.name}")
         dfs_to_merge.append(read_dat(name))
@@ -92,6 +92,7 @@ fin_df["TIMESTAMP"] = pd.to_datetime(fin_df["TIMESTAMP"])
 cutoff = pd.Timestamp(date.today() - timedelta(days=30))
 fin_df = fin_df[fin_df["TIMESTAMP"] > cutoff].reset_index(drop=True)
 
+fin_df.to_csv(f"C:/Users/{user}/Downloads/wet_dashboard_data_test.csv")
 # ── Upload to Supabase ────────────────────────────────────────────────────────
 client.table("wet_dashboard").upsert({
     "id": 500,
