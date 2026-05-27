@@ -11,7 +11,7 @@ warnings.filterwarnings('ignore')
 
 # ── Config ────────────────────────────────────────────────────────────────────
 client = create_client(st.secrets["supabase"]["url"], st.secrets["supabase"]["key"])
-user = "mrcoo"
+user = "cpetrosi"
 path = Path(f"C:/Users/{user}/Box/DATA_CUBBIES/Mina_S/Datalogger_Report_Files/WET_Stations")
 sites = ["CAP_001", "CAP_002", "WIN_001", "OAK_001", "CHW_001", "GLE_001", "BAR_002"]
 
