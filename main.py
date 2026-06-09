@@ -26,10 +26,15 @@ client = create_client(
 
 st.title("WET Dashboard")
 
+sites = ["CAP_001", "CAP_002", "WIN_001", "OAK_001", "CHW_001", "GLE_001", "BAR_002"]
+
 @st.cache_resource
 def import_data():
-  res = client.table("wet_dashboard").select("data").eq("data_name", "all_data").eq("id", 500).execute()
-  all_data = pd.read_json(StringIO(json.dumps(res.data[0]["data"])))
+  all_data = pd.DataFrame()
+  for site in sites:
+    res = client.table("wet_dashboard").select("data").eq("data_name", site).execute()
+    temp = pd.read_json(StringIO(json.dumps(res.data[0]["data"])))
+    all_data = pd.concat([all_data, temp])
   # all_data = pd.read_csv("C:/Users/cpetrosi/Documents/GitHub/WET-Dashboard/Static_Files/WET_dashboard_data.csv", na_values = "NAN")
   # print(all_data.loc[all_data.site == "CAP_002", "NDVI"])
   
@@ -96,7 +101,7 @@ st.sidebar.header("Plot Adjustments")
 
 ## Puts station selector in sidebar, returns selected station
 site = st.sidebar.selectbox("Select Station:",
-                            ["CAP_001", "CAP_002", "WIN_001", "OAK_001", "CHW_001", "GLE_001", "BAR_002"], index = 0)
+                            sites, index = 0)
 
 ## Puts sensor selector in sidebar, returns selected sensor, options populated by range_names csv
 sensor_type = st.sidebar.selectbox("Select Sensor Type:",

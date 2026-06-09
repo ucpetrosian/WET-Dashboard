@@ -93,11 +93,14 @@ cutoff = pd.Timestamp(date.today() - timedelta(days=30))
 fin_df = fin_df[fin_df["TIMESTAMP"] > cutoff].reset_index(drop=True)
 
 fin_df.to_csv(f"C:/Users/{user}/Downloads/wet_dashboard_data_test.csv")
+
 # ── Upload to Supabase ────────────────────────────────────────────────────────
-client.table("wet_dashboard").upsert({
-    "id": 500,
-    "data_name": "all_data",
-    "data": json.loads(fin_df.to_json())
-}).execute()
+for site in fin_df.site.unique():
+  temp = fin_df[fin_df["site"] == site]
+  client.table("wet_dashboard").upsert({
+      "data_name": site,
+      "data": json.loads(temp.to_json())
+  }, on_conflict = "data_name").execute()
+  
 
 print(f"Done. Uploaded {len(fin_df)} rows across {fin_df['site'].nunique()} sites.")
