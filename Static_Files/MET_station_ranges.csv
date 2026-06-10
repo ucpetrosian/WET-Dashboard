@@ -335,5 +335,5 @@ TS_1_8_1,MET_SOIL,-5,60,deg C,BAR_002
 TS_1_9_1,MET_SOIL,-5,60,deg C,BAR_002
 WP,Biological,-30,0,Bar,BAR_002
 Water_Vol_Scan_Tot,Flowmeter,0,20,Gallons,BAR_002
-Flow_GPM_Avg,Flowmeter,0,2,GPM,BAR_002
+Flow_GPM_Mean,Flowmeter,0,2,GPM,BAR_002
 Flow_GPM_Max,Flowmeter,0,7,GPM,BAR_002
